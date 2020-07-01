@@ -12,38 +12,47 @@ from matplotlib import pyplot as plt
 from scipy import stats
 
 st.title('LiRA - The Linear Regression App')
-st.header('H1')
+
 # # A. Solve using Analytical Calculus - Random data points
 
 # ## Create random X and y samples
-
-
-# Generate 'random' data
-#np.random.seed(1)
 st.write('To start with we will simulate a Linear Function which will be used to generate our data. In order to do so please select the number of samples:')
 
-# Number of Samples
-n = st.slider('Number of samples', 50, 100)
-st.write("The number of data points generated will be", n)
 
+st.header('Simulate Linear function - Y = aX + b')
+np.random.seed(1)
+st.sidebar.subheader('Sampling')
+#st.write('Generate Random numbers')
+n = st.sidebar.slider('Select number of samples for X and Y', 50, 100)
 # Create r and r1, random vectors of 100 numbers each with mean = 0 and standard deviation = 1
 r = np.random.randn(n)
 r1 = np.random.randn(n)
 
+st.sidebar.subheader('Configure distribution for X')
 # Create random Input vector X using r
-# mean = 3
-# stddev = 2
-X = 3 * r + 2
+# Use these for good visual - (mean_x = 3, stddev_x = 2)
+mean_x = st.sidebar.slider("Select Mean for generating X",-5,5,3)
+stddev_x = st.sidebar.slider('Selct Standard Deviation for generating X',-5,5,2)
+X = mean_x * r + stddev_x
 
-st.header('Residual')
+st.sidebar.subheader('Coefficients')
+#st.write('Select a (Slope) and b (Intercept) for Simulated Linear function')
+# Select a = 0.35 and b = 2.5 for good visual
+a = st.sidebar.slider('Select "Slope" for Regression line', 0.01, 2.0,0.35)
+b = st.sidebar.slider('Select "Intercept" for Regression line', 1.0, 5.0, 2.5)
+
+st.sidebar.subheader('Residual')
+#st.write('Select residual distribution for noise added to Simulated Linear function')
 # Create random Residual term Res using r
 # mean = 0
-stddev = st.slider ('Please enter Standard Deviation (0.0-1.0 values)',0.0,1.1)
-res = stddev* r1 
+stddev_res = st.sidebar.slider ('Select Standard Deviation for residual error',0.0,1.0,0.2)
+res = stddev_res* r1 
 
+
+#st.sidebar.[n, mean_x, stddev_x, stddev_res]()
 # Generate Y values based on the simulated regression line and error/noise
 # Population Regression Line
-yreg = 2.5 + 0.35 * X 
+yreg = b + a * X 
 # Adding noise/error
 y = yreg + res                  
 
@@ -54,8 +63,9 @@ rl = pd.DataFrame(
      'RegL':yreg}
 )
 
-# Show the first five rows of our dataframe
-rl.head()
+st.write('Show the first five rows of our dataframe')
+st.dataframe(rl.head().style.highlight_max(axis=0))
+
 
 
 # ## Calculate coefficients alpha and beta
@@ -129,8 +139,8 @@ p_beta = 1 - stats.t.cdf(t_beta,df=df)
 
 # ## Coefficients Assessment Summary
 
-
-# Assessment of Coefficients
+st.header('Model Evaluation Metrics')
+st.subheader('Assessment of Coefficients')
 mds = pd.DataFrame(
     {'Name':['Slope (alpha)', 'Intercept (beta)'],
      'Coefficient': [alpha, beta],
@@ -142,7 +152,7 @@ mds = pd.DataFrame(
 mds
 
 
-# ## Model Assessment Summary
+st.subheader('Model Assessment Summary')
 
 # Model Assessment - Storing all key indicators in dummy data frame with range 1
 ms = pd.DataFrame(
@@ -157,8 +167,8 @@ ms = pd.DataFrame(
 # Cut out the dummy index column to see the Results
 ms.iloc[:,1:9]    
 
-
-# ## Plot Predicted vs Actual vs Sampled Data
+st.header('Plots')
+st.write('Plot Predicted vs Actual vs Sampled Data')
 
 # Plot regression against actual data
 plt.figure(figsize=(12, 6))
@@ -173,50 +183,7 @@ plt.xlabel('X')
 plt.ylabel('y')
 plt.legend()
 plt.show()
-
-
-# # B. Solve using Matrix Algebra - Fixed data points
-
-# ## Create and Format Data
-
-
-# Reuse the same random inputs created above but reformated to Matrices
-X1 = np.matrix([np.ones(n), rl['X']]).T
-y1 = np.matrix(rl['y']).T
-
-
-# ## Solve for projection matrix
-
-
-A = np.linalg.inv(X1.T.dot(X1)).dot(X1.T).dot(y1)
-
-m = np.asscalar(A[1])
-b = np.asscalar(A[0])
-
-print("b (bias/Y intercept) =",b,", and m (slope) =",m)
-
-
-# ## Plot data and predictions
-
-
-#xx = np.linspace(0, .5, 2)
-y1pred = b + m * X
-
-
-# Plot regression against actual data
-plt.figure(figsize=(12, 6))
-# Population Regression Line
-plt.plot(X,rl['RegL'], label = 'Actual (Population Regression Line)',color='green')
-# Least squares line
-plt.plot(X, y1pred, label = 'Predicted (Least Squares Line)', color='blue')     
-# scatter plot showing actual data
-plt.plot(X, y, 'ro', label ='Collected data')   
-plt.title('Actual vs Predicted')
-plt.xlabel('X')
-plt.ylabel('y')
-plt.legend()
-plt.show()
-
+st.pyplot()
 
 
 
