@@ -6,8 +6,6 @@ import streamlit as st
 
 import numpy as np
 import pandas as pd
-from numpy import array
-from numpy.linalg import inv
 from matplotlib import pyplot as plt
 from scipy import stats
 
