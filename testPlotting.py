@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Aug  3 05:49:24 2020
 
+"""
 @author: etzimopoulos
 """
 
@@ -11,8 +8,11 @@ import numpy as np
 import streamlit as st
 import time
 
-fig, ax = plt.subplots()
 
+st.title('Fun Streamlit Plotting App')
+
+st.write('Animating random data points')
+fig, ax = plt.subplots()
 max_x = 5
 max_rand = 10
 
@@ -28,7 +28,8 @@ def animate(i):  # update the y values (every 1000ms)
     line.set_ydata(np.random.randint(0, max_rand, max_x))
     the_plot.pyplot(plt)
 
+
 init()
-for i in range(100):
+for i in range(50):
     animate(i)
     time.sleep(0.1)
